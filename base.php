@@ -14,7 +14,7 @@
 class Base
 {
 	public $User;
-	public $Pass;
+	public $Password;
 	public $UseSSL;
 	private $host = 'gateway.sms77.de';
 	protected $File = '';
@@ -32,10 +32,10 @@ class Base
 
 	private function getApiPassword()
 	{
-		$password = $this->Pass;
+		$password = $this->Password;
 
 		// detect if the user already specified an md5 hash
-		if (preg_match("#^[0-9a-f]{32}$#i", $this->Pass) == 0)
+		if (preg_match("#^[0-9a-f]{32}$#i", $this->Password) == 0)
 			$password = md5($password);
 
 		return $password;
