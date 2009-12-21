@@ -22,12 +22,23 @@ class Base
 	protected function ApiCall($data = array())
 	{
 		$data['u'] = $this->User;
-		$data['p'] = md5($this->Pass);
+		$data['p'] = $this->getApiPassword();
 
 		$query = http_build_query($data);
 		$url = $this->buildUrl($query);
 
 		return file_get_contents($url);
+	}
+
+	private function getApiPassword()
+	{
+		$password = $this->Pass;
+
+		// detect if the user already specified an md5 hash
+		if (preg_match("#^[0-9a-f]{32}$#i", $this->Pass) == 0)
+			$password = md5($password);
+
+		return $password;
 	}
 
 	private function buildUrl($query)
