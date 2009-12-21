@@ -19,6 +19,8 @@ class Sms extends Base
 	public $To;
 	public $From;
 	public $Type;
+	
+	public $Delay;
 
 	public $Debug;
 	public $Status;
@@ -27,12 +29,15 @@ class Sms extends Base
 	{
 		$this->Debug = FALSE;
 		$this->Status = TRUE;
+		$this->Delay = FALSE;
 	}
 
 	private function checkIntegrity()
 	{
 		if (empty($this->Text))
 			throw new LogicException('Text not set.');
+		if (strlen($this->Text) > 1555)
+			throw new LogicException('Text too long; 1555 chars are allowed.');
 
 		if (empty($this->To))
 			throw new LogicException('To not set.');
@@ -50,6 +55,24 @@ class Sms extends Base
 			throw new LogicException('Length of From chars exceeded.');
 	}
 
+	private function parseDelayTime()
+	{
+		$human = strpos($this->Delay, '-');
+		$datetime = $this->Delay;
+		$now = time();
+
+		if ($human !== FALSE)
+			$datetime = strptime($this->Delay);
+
+		if ($datetime === FALSE || !is_numeric($datetime))
+			throw new LogicException('Unrecognized date & time format for delayed sending.');
+		
+		if ($now > $datetime)
+			throw new LogicException('The date & time for delayed sending is not in the future.');
+
+		return $datetime;
+	}
+
 	public function Send()
 	{
 		$this->checkIntegrity();
@@ -60,6 +83,8 @@ class Sms extends Base
 			$data['debug'] = 1;
 		if ($this->Status)
 			$data['status'] = 1;
+		if ($this->Delay != FALSE)
+			$data['delay'] = $this->parseDelayTime();
 
 		$response = $this->ApiCall($data);
 
