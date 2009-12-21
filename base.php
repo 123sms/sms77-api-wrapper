@@ -35,7 +35,7 @@ class Base
 		$password = $this->Password;
 
 		// detect if the user already specified an md5 hash
-		if (preg_match("#^[0-9a-f]{32}$#i", $this->Password) == 0)
+		if (preg_match('#^[0-9a-f]{32}$#i', $this->Password) == 0)
 			$password = md5($password);
 
 		return $password;
@@ -102,7 +102,7 @@ class ApiStatus
 
 	public function __toString()
 	{
-		return $this->GetMessage() . '(' . $this->Status . ')';
+		return $this->GetMessage() . ' (' . $this->Status . ')';
 	}
 }
 
