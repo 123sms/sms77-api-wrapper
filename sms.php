@@ -112,6 +112,7 @@ class SmsResult
 
 class SmsType
 {
+	const BASICLOW = 'basiclow';
 	const BASICPLUS = 'basicplus';
 	const QUALITY = 'quality';
 	const FESTNETZ = 'festnetz';
