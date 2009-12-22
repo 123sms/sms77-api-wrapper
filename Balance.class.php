@@ -11,7 +11,7 @@
  * $Id$
  */
 
-require_once('base.php');
+require_once('Base.class.php');
 
 class Balance extends Base
 {
