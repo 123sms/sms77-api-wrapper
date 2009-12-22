@@ -21,6 +21,7 @@ class Sms extends Base
 	public $Type;
 	
 	public $Delay;
+	public $ReloadLock;
 
 	public $Debug;
 	public $Status;
@@ -30,6 +31,7 @@ class Sms extends Base
 		$this->Debug = FALSE;
 		$this->Status = TRUE;
 		$this->Delay = FALSE;
+		$this->ReloadLock = TRUE;
 	}
 
 	private function checkIntegrity()
@@ -37,7 +39,7 @@ class Sms extends Base
 		if (empty($this->Text))
 			throw new LogicException('Text not set.');
 		if (strlen($this->Text) > 1555)
-			throw new LogicException('Text too long; 1555 chars are allowed.');
+			throw new LogicException('Text too long: 1555 chars are allowed.');
 
 		if (empty($this->To))
 			throw new LogicException('To not set.');
@@ -47,8 +49,11 @@ class Sms extends Base
 		if (empty($this->Type))
 			throw new LogicException('Type not set.');
 
-		if (empty($this->From) && $this->Type != SmsType::BASICPLUS)
-			throw new LogicException('From is not set, although SMS type is not BasicPlus.');
+		if (empty($this->From)
+		{
+			if ($this->Type != SmsType::BASICPLUS && $this->Type != SmsType::BASICLOW)
+				throw new LogicException('From is not set, although SMS type is not BasicPlus.');
+		}
 		if (is_numeric($this->From) && strlen($this->From) > 16)
 			throw new LogicException('Length of From number exceeded.');
 		if (!is_numeric($this->From) && strlen($this->From) > 11)
@@ -65,10 +70,10 @@ class Sms extends Base
 			$datetime = strptime($this->Delay);
 
 		if ($datetime === FALSE || !is_numeric($datetime))
-			throw new LogicException('Unrecognized date & time format for delayed sending.');
+			throw new LogicException('Unrecognized date & time format for delayed delivery.');
 		
 		if ($now > $datetime)
-			throw new LogicException('The date & time for delayed sending is not in the future.');
+			throw new LogicException('The date & time for delayed delivery is not in the future.');
 
 		return $datetime;
 	}
@@ -85,6 +90,8 @@ class Sms extends Base
 			$data['status'] = 1;
 		if ($this->Delay != FALSE)
 			$data['delay'] = $this->parseDelayTime();
+		if (!$this->ReloadLock)
+			$data['no_reload'] = 1;
 
 		$response = $this->ApiCall($data);
 
