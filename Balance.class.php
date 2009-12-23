@@ -17,7 +17,8 @@ class Balance extends Base
 {
 	public function __construct()
 	{
-		$this->File = 'balance.php';
+		parent::__construct();
+		$this->HttpEngine->FilePath = 'balance.php';
 	}
 
 	public function Retrieve()

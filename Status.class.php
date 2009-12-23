@@ -19,7 +19,8 @@ class Status extends Base
 
 	public function __construct()
 	{
-		$this->File = 'status.php';
+		parent::__construct();
+		$this->HttpEngine->FilePath = 'status.php';
 	}
 
 	public function Retrieve()

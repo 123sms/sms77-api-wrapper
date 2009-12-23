@@ -28,6 +28,8 @@ class Sms extends Base
 
 	public function __construct()
 	{
+		parent::__construct();
+
 		$this->Debug = FALSE;
 		$this->Status = TRUE;
 		$this->Delay = FALSE;

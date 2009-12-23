@@ -11,23 +11,34 @@
  * $Id$
  */
 
+require_once('HttpEngine.class.php');
+
 class Base
 {
 	public $User;
 	public $Password;
 	public $UseSSL;
-	private $host = 'gateway.sms77.de';
-	protected $File = '';
+
+	protected $HttpEngine;
+
+	public function __construct()
+	{
+		$this->HttpEngine = new HttpEngine();
+		$this->HttpEngine->Host = 'gateway.sms77.de';
+	}
 
 	protected function ApiCall($data = array())
 	{
 		$data['u'] = $this->User;
 		$data['p'] = $this->getApiPassword();
 
-		$query = http_build_query($data);
-		$url = $this->buildUrl($query);
+		$this->HttpEngine->UseSSL = $this->UseSSL;
+		$result = $this->HttpEngine->GetRequest($data);
 
-		return file_get_contents($url);
+		if ($result === FALSE)
+			throw new ErrorException('The API was not reachable.');
+		else
+			return $this->HttpEngine->Response;
 	}
 
 	private function getApiPassword()
@@ -40,22 +51,9 @@ class Base
 
 		return $password;
 	}
-
-	private function buildUrl($query)
-	{
-		$url = 'http';
-
-		if ($this->UseSSL)
-			$url .= 's';
-
-		$url .= '://' . $this->host . '/';
-		$url .= $this->File . '?' . $query;
-
-		return $url;
-	}
 }
 
-class ApiStatus
+final class ApiStatus
 {
 	const OK = 100;
 	const SOME_RECIPIENTS_FAILED = 101;
