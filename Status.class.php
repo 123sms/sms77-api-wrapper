@@ -26,7 +26,7 @@ class Status extends Base
 	public function Retrieve()
 	{
 		if (empty($this->MessageId))
-			throw new LogicException('MessageId not set.');
+			throw new BadMethodCallException('MessageId not set.');
 
 		$data = array('msg_id' => $this->MessageId);
 
