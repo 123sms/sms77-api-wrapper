@@ -8,7 +8,6 @@
  * This code is freely available under the BSD License.
  * (see http://creativecommons.org/licenses/BSD/)
  *
- * $Id: Status.class.php 9 2009-12-22 22:56:47Z google@mx-server.de $
  */
 
 class HttpEngine

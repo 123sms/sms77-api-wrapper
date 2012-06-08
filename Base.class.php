@@ -8,7 +8,6 @@
  * This code is freely available under the BSD License.
  * (see http://creativecommons.org/licenses/BSD/)
  *
- * $Id$
  */
 
 require_once('HttpEngine.class.php');
