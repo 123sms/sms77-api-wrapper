@@ -14,7 +14,7 @@ require_once('HttpEngine.class.php');
 
 class Base
 {
-	public $User;
+	public $Username;
 	public $Password;
 	public $UseSSL;
 
@@ -28,7 +28,12 @@ class Base
 
 	protected function ApiCall($data = array())
 	{
-		$data['u'] = $this->User;
+		if (empty($this->Username))
+			throw new BadMethodCallException('Username not set.');
+		if (empty($this->Password))
+			throw new BadMethodCallException('Password not set.');
+
+		$data['u'] = $this->Username;
 		$data['p'] = $this->getApiPassword();
 
 		$this->HttpEngine->UseSSL = $this->UseSSL;
