@@ -3,7 +3,7 @@
 /*
  * Object oriented wrapper of the sms77.de HTTP API
  *
- * (C) 2009 Michael Bemmerl
+ * (C) 2009, 2012 Michael Bemmerl
  *
  * This code is freely available under the BSD License.
  * (see http://creativecommons.org/licenses/BSD/)
@@ -35,6 +35,9 @@ class Base
 
 		$data['u'] = $this->Username;
 		$data['p'] = $this->getApiPassword();
+
+		if ($this->UseSSL && !$this->HttpEngine->WrapperAvailable('https'))
+			throw new BadMethodCallException('\'UseSSL\' set, but SSL not available on this system.');
 
 		$this->HttpEngine->UseSSL = $this->UseSSL;
 		$result = $this->HttpEngine->GetRequest($data);

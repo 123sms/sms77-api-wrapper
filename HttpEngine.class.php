@@ -3,7 +3,7 @@
 /*
  * Object oriented wrapper of the sms77.de HTTP API
  *
- * (C) 2009 Michael Bemmerl
+ * (C) 2009, 2012 Michael Bemmerl
  *
  * This code is freely available under the BSD License.
  * (see http://creativecommons.org/licenses/BSD/)
@@ -57,6 +57,9 @@ class HttpEngine
 		if ($this->UseSSL)
 			$url .= 's';
 
+		if (!$this->WrapperAvailable($url))
+			throw new RuntimeException('Wrapper \'' . $url . '\' not available on this system.');
+
 		$filePath = $this->FilePath;
 
 		// remove slash in the beginning
@@ -69,5 +72,11 @@ class HttpEngine
 			$url .= '?' . $query;
 
 		return $url;
+	}
+
+	public function WrapperAvailable($wrapper)
+	{
+		$wrappers = stream_get_wrappers();
+		return in_array($wrapper, $wrappers, TRUE);
 	}
 }
