@@ -3,7 +3,7 @@
 /*
  * Object oriented wrapper of the sms77.de HTTP API
  *
- * (C) 2009 Michael Bemmerl
+ * (C) 2009, 2012 Michael Bemmerl
  *
  * This code is freely available under the BSD License.
  * (see http://creativecommons.org/licenses/BSD/)
@@ -38,27 +38,42 @@ class Sms extends Base
 	private function checkIntegrity()
 	{
 		if (empty($this->Text))
-			throw new LogicException('Text not set.');
+			throw new BadMethodCallException('\'Text\' field not set.');
 		if (strlen($this->Text) > 1555)
-			throw new LogicException('Text too long: 1555 chars are allowed.');
+			throw new BadMethodCallException('\'Text\' field too long: 1555 chars is the maximum.');
 
 		if (empty($this->To))
-			throw new LogicException('To not set.');
+			throw new BadMethodCallException('\'To\' field not set.');
 		if (!is_numeric($this->To))
-			throw new LogicException('To has to be numerical.');
+			throw new BadMethodCallException('\'To\' field has to be numerical.');
 
 		if (empty($this->Type))
-			throw new LogicException('Type not set.');
+			throw new BadMethodCallException('\'Type\' field not set.');
 
-		if (empty($this->From)
+		$class = new ReflectionClass('SmsType');
+		$constants = $class->getConstants();
+		$found = FALSE;
+
+		// check if the supplied type is a valid SMS type.
+		foreach($constants as $key => $value)
+			if ($this->Type == $value)
+			{
+				$found = TRUE;
+				break;
+			}
+
+		if (!$found)
+			throw new UnexpectedValueException('Unknown value in \'Type\' field. Expecting one of the constants in the SmsType class.');
+
+		if (empty($this->From))
 		{
 			if ($this->Type != SmsType::BASICPLUS && $this->Type != SmsType::BASICLOW)
-				throw new LogicException('From is not set, although SMS type is not BasicPlus.');
+				throw new BadMethodCallException('\'From\' field is not set, although SMS type is not BasicPlus.');
 		}
 		if (is_numeric($this->From) && strlen($this->From) > 16)
-			throw new LogicException('Length of From number exceeded.');
+			throw new BadMethodCallException('Length of \'From\' number exceeded.');
 		if (!is_numeric($this->From) && strlen($this->From) > 11)
-			throw new LogicException('Length of From chars exceeded.');
+			throw new BadMethodCallException('Length of \'From\' chars exceeded.');
 	}
 
 	private function parseDelayTime()
@@ -71,10 +86,10 @@ class Sms extends Base
 			$datetime = strptime($this->Delay);
 
 		if ($datetime === FALSE || !is_numeric($datetime))
-			throw new LogicException('Unrecognized date & time format for delayed delivery.');
+			throw new BadMethodCallException('Unrecognized date & time format for delayed delivery.');
 		
 		if ($now > $datetime)
-			throw new LogicException('The date & time for delayed delivery is not in the future.');
+			throw new BadMethodCallException('The date & time for delayed delivery is not in the future.');
 
 		return $datetime;
 	}
