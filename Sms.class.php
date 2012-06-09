@@ -37,16 +37,19 @@ class Sms extends Base
 
 	private function checkIntegrity()
 	{
+		// check SMS text
 		if (empty($this->Text))
 			throw new BadMethodCallException('\'Text\' field not set.');
 		if (strlen($this->Text) > 1555)
 			throw new BadMethodCallException('\'Text\' field too long: 1555 chars is the maximum.');
 
+		// check recipient
 		if (empty($this->To))
 			throw new BadMethodCallException('\'To\' field not set.');
 		if (!is_numeric($this->To))
 			throw new BadMethodCallException('\'To\' field has to be numerical.');
 
+		// check desired SMS type
 		if (empty($this->Type))
 			throw new BadMethodCallException('\'Type\' field not set.');
 
@@ -65,15 +68,21 @@ class Sms extends Base
 		if (!$found)
 			throw new UnexpectedValueException('Unknown value in \'Type\' field. Expecting one of the constants in the SmsType class.');
 
+		// check sender
 		if (empty($this->From))
 		{
 			if ($this->Type != SmsType::BASICPLUS && $this->Type != SmsType::BASICLOW)
-				throw new BadMethodCallException('\'From\' field is not set, although SMS type is not BasicPlus.');
+				throw new BadMethodCallException('\'From\' field is not set, although SMS type does require a sender.');
+		}
+		else
+		{
+			if ($this->Type == SmsType::BASICPLUS || $this->Type == SmsType::BASICLOW)
+				throw new BadMethodCallException('\'From\' field is set, although SMS type does not allow a custom sender.');
 		}
 		if (is_numeric($this->From) && strlen($this->From) > 16)
-			throw new BadMethodCallException('Length of \'From\' number exceeded.');
+			throw new RangeException('Length of \'From\' number exceeded.');
 		if (!is_numeric($this->From) && strlen($this->From) > 11)
-			throw new BadMethodCallException('Length of \'From\' chars exceeded.');
+			throw new RangeException('Length of \'From\' chars exceeded.');
 	}
 
 	private function parseDelayTime()
@@ -100,6 +109,8 @@ class Sms extends Base
 
 		$data = array('to' => $this->To, 'text' => $this->Text, 'type' => $this->Type, 'return_msg_id' => 1);
 
+		if ($this->From !== NULL)
+			$data['from'] = $this->From;
 		if ($this->Debug)
 			$data['debug'] = 1;
 		if ($this->Status)
