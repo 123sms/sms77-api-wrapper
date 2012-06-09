@@ -83,7 +83,7 @@ class Sms extends Base
 		$now = time();
 
 		if ($human !== FALSE)
-			$datetime = strptime($this->Delay);
+			$datetime = strtotime($this->Delay);
 
 		if ($datetime === FALSE || !is_numeric($datetime))
 			throw new BadMethodCallException('Unrecognized date & time format for delayed delivery.');
