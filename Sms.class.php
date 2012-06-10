@@ -14,6 +14,8 @@ require_once('Base.class.php');
 
 class Sms extends Base
 {
+	const CHARS_PER_SMS = 160;
+
 	public $Text;
 	public $To;
 	public $From;
@@ -38,16 +40,13 @@ class Sms extends Base
 	private function checkIntegrity()
 	{
 		// check SMS text
-		if (empty($this->Text))
-			throw new BadMethodCallException('\'Text\' field not set.');
-		if (strlen($this->Text) > 1555)
-			throw new BadMethodCallException('\'Text\' field too long: 1555 chars is the maximum.');
+		$this->checkTextIntegrity();
 
 		// check recipient
 		if (empty($this->To))
 			throw new BadMethodCallException('\'To\' field not set.');
 		if (!is_numeric($this->To))
-			throw new BadMethodCallException('\'To\' field has to be numerical.');
+			throw new RangeException('\'To\' field has to be numerical.');
 
 		// check desired SMS type
 		if (empty($this->Type))
@@ -83,6 +82,14 @@ class Sms extends Base
 			throw new RangeException('Length of \'From\' number exceeded.');
 		if (!is_numeric($this->From) && strlen($this->From) > 11)
 			throw new RangeException('Length of \'From\' chars exceeded.');
+	}
+
+	private function checkTextIntegrity()
+	{
+		if (empty($this->Text))
+			throw new BadMethodCallException('\'Text\' field not set.');
+		if (strlen($this->Text) > 1555)
+			throw new RangeException('\'Text\' field too long: 1555 chars is the maximum.');
 	}
 
 	private function parseDelayTime()
@@ -123,6 +130,14 @@ class Sms extends Base
 		$response = $this->ApiCall($data);
 
 		return new SmsResult($response);
+	}
+
+	public function GetSmsCount()
+	{
+		$this->checkTextIntegrity();
+
+		$exact = strlen($this->Text) / self::CHARS_PER_SMS;
+		return (integer)ceil($exact);
 	}
 }
 
