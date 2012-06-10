@@ -19,22 +19,27 @@ class Base
 	public $UseSSL;
 
 	protected $HttpEngine;
+	protected $NeedsAuthentication;
 
 	public function __construct()
 	{
 		$this->HttpEngine = new HttpEngine();
 		$this->HttpEngine->Host = 'gateway.sms77.de';
+		$this->NeedsAuthentication = TRUE;
 	}
 
 	protected function ApiCall($data = array())
 	{
-		if (empty($this->Username))
-			throw new BadMethodCallException('Username not set.');
-		if (empty($this->Password))
-			throw new BadMethodCallException('Password not set.');
+		if ($this->NeedsAuthentication)
+		{
+			if (empty($this->Username))
+				throw new BadMethodCallException('Username not set.');
+			if (empty($this->Password))
+				throw new BadMethodCallException('Password not set.');
 
-		$data['u'] = $this->Username;
-		$data['p'] = $this->getApiPassword();
+			$data['u'] = $this->Username;
+			$data['p'] = $this->getApiPassword();
+		}
 
 		if ($this->UseSSL && !$this->HttpEngine->WrapperAvailable('https'))
 			throw new BadMethodCallException('\'UseSSL\' set, but SSL not available on this system.');

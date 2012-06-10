@@ -12,25 +12,19 @@
 
 require_once('HttpEngine.class.php');
 
-// not derived from Base class, because this is not a standard API call.
-class GatewayStatus
+class GatewayStatus extends Base
 {
-	private $httpEngine;
-
 	public function __construct()
 	{
-		$this->httpEngine = new HttpEngine();
-		$this->httpEngine->Host = 'www.sms77.de';
-		$this->httpEngine->FilePath = 'gateway/gateway-status.php';
+		parent::__construct();
+
+		$this->NeedsAuthentication = FALSE;
+		$this->HttpEngine->FilePath = 'gateway-status.php';
 	}
 
 	public function Retrieve()
 	{
-		$result = $this->httpEngine->GetRequest();
-		$response = $this->httpEngine->Response;
-
-		if ($result === FALSE)
-			throw new ErrorException('The API was not reachable.');
+		$response = $this->ApiCall();
 
 		if (empty($response))
 			throw new ErrorException('The API returned an empty response.');
