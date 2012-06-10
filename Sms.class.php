@@ -152,5 +152,3 @@ class SmsType
 	const FESTNETZ = 'festnetz';
 	const FLASH = 'flash';
 }
-
-?>

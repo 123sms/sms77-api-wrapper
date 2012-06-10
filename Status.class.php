@@ -105,5 +105,3 @@ class SmsStatus
 			return $this->GetMessage() . ', at ' . $this->Time->format(DATE_RFC822);
 	}
 }
-
-?>

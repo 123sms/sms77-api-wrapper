@@ -51,5 +51,3 @@ class BalanceResult
 			return $this->Status->__toString();
 	}
 }
-
-?>

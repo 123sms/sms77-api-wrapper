@@ -115,5 +115,3 @@ final class ApiStatus
 		return $this->GetMessage() . ' (' . $this->Status . ')';
 	}
 }
-
-?>
