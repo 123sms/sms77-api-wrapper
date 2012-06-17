@@ -155,7 +155,17 @@ class SmsResult
 		if (count($data) > 1)
 			$this->MessageId = $data[1];
 		else
-			$this->MessageId = null;
+			$this->MessageId = NULL;
+	}
+
+	public function __toString()
+	{
+		$result = (string)$this->Status;
+
+		if ($this->MessageId !== NULL)
+			$result .= '; MessageId: ' . $this->MessageId;
+
+		return $result;
 	}
 }
 
