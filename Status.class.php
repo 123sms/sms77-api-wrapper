@@ -3,7 +3,7 @@
 /*
  * Object oriented wrapper of the sms77.de HTTP API
  *
- * (C) 2009 Michael Bemmerl
+ * (C) 2009, 2012 Michael Bemmerl
  *
  * This code is freely available under the BSD License.
  * (see http://creativecommons.org/licenses/BSD/)
@@ -59,6 +59,8 @@ class SmsStatus
 	{
 		$smss = new SmsStatus();
 
+		// if the api returned an error code, parse the api error
+		// instead of the SMS status.
 		if (strlen($response) == 3)
 			$smss->Status = new ApiStatus($response);
 		else
@@ -79,7 +81,6 @@ class SmsStatus
 					break;
 				}
 			}
-
 		}
 
 		return $smss;
